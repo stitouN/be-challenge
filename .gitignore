@@ -1,2 +1,5 @@
 postgres/postgres-data/*
 __pycache__/*
+models/__pycache__/*
+postgres/__pycache__/*
+models/__pycache__/*

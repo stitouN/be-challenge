@@ -1,7 +1,8 @@
+import json
 from flask import Flask
-import time
 from postgres.conf import DATABASE_CONNECTION_URI
 from models.beDb import db
+from models.database import get_users_by_page, searchUsersByFirstName
 import redis
 
 
@@ -17,18 +18,34 @@ def create_app():
 app = create_app()
 cache = redis.Redis(host='redis', port=6379)
 
-def get_hit_count():
-    retries = 5
-    while True:
-        try:
-            return cache.incr('hits')
-        except redis.exceptions.ConnectionError as exc:
-            if retries == 0:
-                raise exc
-            retries -= 1
-            time.sleep(0.5)
+@app.route('/users/<pageNumber>/<max_items>', methods=['GET'])
+def fetch(pageNumber,max_items):
+    users =get_users_by_page(page=int(pageNumber),max_items=int(max_items))
+    all_users = []
+    for user in users:
+        new_user = {
+            "id": user.user_id,
+            "firstName": user.firstname,
+            "lastName": user.lastname,
+            "phone": user.phonenumber
+        }
 
-@app.route('/')
-def hello():
-    count = get_hit_count()
-    return 'Hello From Achouba! I have been seen {} times.\n'.format(count)
+        all_users.append(new_user)
+    return json.dumps(all_users), 200
+
+
+@app.route('/users/search/<firstName>', methods=['GET'])
+def search(firstName):
+    users =searchUsersByFirstName(firstname=firstName)
+    all_users = []
+    for user in users:
+        new_user = {
+            "id": user.user_id,
+            "firstName": user.firstname,
+            "lastName": user.lastname,
+            "phone": user.phonenumber
+        }
+
+        all_users.append(new_user)
+    return json.dumps(all_users), 200
+
