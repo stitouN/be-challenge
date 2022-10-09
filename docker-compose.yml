@@ -8,5 +8,20 @@ services:
       - .:/code
     environment:
       FLASK_DEBUG: True
+    depends_on:
+      - postgres
   redis:
     image: "redis:alpine"
+  postgres:
+    restart: always
+    image: postgres:10
+    build: 
+      dockerfile: ./postgres/Dockerfile
+    environment:
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${DB}
+    volumes:
+      - ./postgres/postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
