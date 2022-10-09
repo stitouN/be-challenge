@@ -1,7 +1,7 @@
 from flask import Flask
 import time
-from conf import DATABASE_CONNECTION_URI
-from beDb import db
+from postgres.conf import DATABASE_CONNECTION_URI
+from models.beDb import db
 import redis
 
 
