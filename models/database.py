@@ -6,8 +6,8 @@ def get_users_by_page(page,max_items):
     return data
 
 
-def searchUsersByFirstName(firstname):
-    data = Users.query.filter_by(firstname=firstname).all()
+def searchUsersByName(firstname,lastname):
+    data = Users.query.filter_by(firstname=firstname,lastname=lastname).all()
     return data
 
 def commit_changes():

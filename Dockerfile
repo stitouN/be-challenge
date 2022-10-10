@@ -3,6 +3,7 @@ FROM python:3.7-alpine
 RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
 RUN pip install psycopg2-binary
 RUN apk add build-base
+RUN apk add curl
 WORKDIR /code
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0

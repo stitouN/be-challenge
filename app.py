@@ -1,9 +1,9 @@
 import json
-from flask import Flask
+from flask import Flask, jsonify, render_template, request
 from flask_caching import Cache
 from postgres.conf import DATABASE_CONNECTION_URI
 from models.beDb import db
-from models.database import get_users_by_page, searchUsersByFirstName
+from models.database import get_users_by_page, searchUsersByName
 import redis
 
 
@@ -35,13 +35,13 @@ def fetch(pageNumber,max_items):
         }
 
         all_users.append(new_user)
-    return json.dumps(all_users), 200
+    return jsonify(all_users), 200
 
 
-@app.route('/users/search/<firstName>', methods=['GET'])
+@app.route('/users/search/<firstName>/<lastName>', methods=['GET'])
 @cache.cached(timeout=30, query_string=True)
-def search(firstName):
-    users =searchUsersByFirstName(firstname=firstName)
+def search(firstName,lastName):
+    users =searchUsersByName(firstname=firstName,lastname=lastName)
     all_users = []
     for user in users:
         new_user = {
@@ -52,5 +52,17 @@ def search(firstName):
         }
 
         all_users.append(new_user)
-    return json.dumps(all_users), 200
+    return jsonify(all_users), 200
 
+
+@app.route('/api/docs')
+def get_docs():
+    print('sending docs')
+    return render_template('swaggerui.html')
+
+@app.route('/api')
+def get_api():
+    hello_dict = {'en': 'Hello', 'es': 'Hola'}
+    lang = request.args.get('lang')
+    return jsonify(hello_dict[lang])
+app.run(use_reloader=True, debug=False)
