@@ -34,7 +34,9 @@ DB have 1MM records.
 
 ### Requirements to API
 Pagination support
+
 Filtration support
+
 Cache-Control (client and server-side)
 
 
