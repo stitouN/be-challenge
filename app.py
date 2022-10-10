@@ -1,5 +1,6 @@
 import json
 from flask import Flask
+from flask_caching import Cache
 from postgres.conf import DATABASE_CONNECTION_URI
 from models.beDb import db
 from models.database import get_users_by_page, searchUsersByFirstName
@@ -15,10 +16,13 @@ def create_app():
     #db.create_all()
     return flask_app
 
-app = create_app()
-cache = redis.Redis(host='redis', port=6379)
+app = create_app() # initialize database configuration
+app.config.from_object('conf.BaseConfig') # configuration of the cache based on redis
+cache = Cache(app)  # Initialize Cache
+
 
 @app.route('/users/<pageNumber>/<max_items>', methods=['GET'])
+@cache.cached(timeout=30, query_string=True)
 def fetch(pageNumber,max_items):
     users =get_users_by_page(page=int(pageNumber),max_items=int(max_items))
     all_users = []
@@ -35,6 +39,7 @@ def fetch(pageNumber,max_items):
 
 
 @app.route('/users/search/<firstName>', methods=['GET'])
+@cache.cached(timeout=30, query_string=True)
 def search(firstName):
     users =searchUsersByFirstName(firstname=firstName)
     all_users = []

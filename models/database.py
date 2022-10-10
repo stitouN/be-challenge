@@ -6,11 +6,9 @@ def get_users_by_page(page,max_items):
     return data
 
 
-
 def searchUsersByFirstName(firstname):
     data = Users.query.filter_by(firstname=firstname).all()
     return data
-
 
 def commit_changes():
     db.session.commit()
